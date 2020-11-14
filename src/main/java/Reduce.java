@@ -8,11 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Reduce extends Reducer<Text, LongWritable, Text, Text> {
+    // 存储当前词语
     private Text word_name = new Text();
+    //存储对应文件中当前词语出现的次数
     private Text word_book = new Text();
+    //存储当前的key值
     private static Text CurrentItem = new Text(" ");
+    //存储最终的结果
     private static List<String> postingList = new ArrayList<String>();
-    private static long[] count_list = new long[WordCount.books.size() + 1];
     @Override
     protected void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
         String name_list = key.toString();
@@ -23,10 +26,13 @@ public class Reduce extends Reducer<Text, LongWritable, Text, Text> {
         for(LongWritable value:values){
             sum += 1;
         }
+        //存储对应文件中当前词语出现的次数
         word_book.set(book_name+":"+sum);
+        //如果当前词语发生了改变或者不为初始值，那么此时postingstr中存储了对应的结果，将其提取出来
         if (!CurrentItem.equals(word_name) && !CurrentItem.equals(" ")) {
             StringBuilder out = new StringBuilder();
             long count = 0;
+            //开始对各个文件中当前词语出现的次数进行加和
             for (String p : postingList) {
                 out.append(p);
                 out.append(",");
@@ -40,12 +46,15 @@ public class Reduce extends Reducer<Text, LongWritable, Text, Text> {
                 Text result = new Text();
                 result.set(final_result);
                 System.out.println(final_result);
+                //将最终结果输入到output文件中
                 context.write(result, new Text(""));
             }
+            //postingstr重新清空
             postingList = new ArrayList<String>();
         }
+        //记录当前的词语
         CurrentItem = new Text(word_name);
+        //添加对应记录
         postingList.add(word_book.toString());
-        //outputCollector.collect(text, new IntWritable(sum));
     }
 }

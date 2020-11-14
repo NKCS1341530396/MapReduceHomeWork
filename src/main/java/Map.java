@@ -12,7 +12,7 @@ public class Map extends  Mapper<LongWritable, Text, Text, LongWritable>{
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         FileSplit fileSplit = (FileSplit)context.getInputSplit();
-        String fileName = fileSplit.getPath().getName();
+        String fileName = fileSplit.getPath().getName().split("\\.")[0];
         Text word = new Text();
         StringTokenizer itr = new StringTokenizer(value.toString());
         for(; itr.hasMoreTokens(); )
