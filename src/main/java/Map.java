@@ -12,12 +12,13 @@ public class Map extends  Mapper<LongWritable, Text, Text, LongWritable>{
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         FileSplit fileSplit = (FileSplit)context.getInputSplit();
-        String fileName = fileSplit.getPath().getName().split("\\.")[0];
-        Text word = new Text();
+        String fileName = fileSplit.getPath().getName();
+        fileName = fileName.substring(0, fileName.length() - 14);
         StringTokenizer itr = new StringTokenizer(value.toString());
         for(; itr.hasMoreTokens(); )
         {
             String temp = itr.nextToken();
+            Text word = new Text();
             if (temp.matches("[\u4E00-\u9FA5]+")) {
                 word.set(temp + "#" + fileName);
                 context.write(word, new LongWritable(1));

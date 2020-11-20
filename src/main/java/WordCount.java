@@ -31,8 +31,6 @@ public class WordCount {
         job.setPartitionerClass(MyPartitioner.class);
         job.setReducerClass(Reduce.class);
 
-        //job.setNumReduceTasks(2);
-
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(LongWritable.class);
         job.setOutputKeyClass(Text.class);

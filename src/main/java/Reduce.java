@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
+//hadoop jar /home/2021st19/WordCount.jar WordCount hdfs://master001:9000/data/wuxia_novels /user/2021st19/output7
 public class Reduce extends Reducer<Text, LongWritable, Text, Text> {
     // 存储当前词语
     private Text word_name = new Text();
@@ -24,7 +24,7 @@ public class Reduce extends Reducer<Text, LongWritable, Text, Text> {
         word_name.set(name);
         long sum = 0L;
         for(LongWritable value:values){
-            sum += 1;
+            sum += value.get();
         }
         //存储对应文件中当前词语出现的次数
         word_book.set(book_name+":"+sum);
@@ -41,13 +41,10 @@ public class Reduce extends Reducer<Text, LongWritable, Text, Text> {
             //计算平均出现次数
             DecimalFormat df = new DecimalFormat("#.00");
             String avgFreq = df.format((double)count / (double)postingList.size());
-            String final_result = word_name.toString() + " "+avgFreq + "," + out.toString();
+            String final_result = avgFreq + "," + out.toString();
             if (count > 0) {
-                Text result = new Text();
-                result.set(final_result);
-                System.out.println(final_result);
                 //将最终结果输入到output文件中
-                context.write(result, new Text(""));
+                context.write(CurrentItem, new Text(final_result));
             }
             //postingstr重新清空
             postingList = new ArrayList<String>();
